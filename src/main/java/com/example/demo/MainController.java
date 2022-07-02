@@ -5,21 +5,23 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
 import javafx.scene.control.ProgressBar;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.TilePane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class MainController {
 
     private static final int FIELD_RANG = 23;
-    private int counter = 0;
+    private static final int FIELD_SIZE = FIELD_RANG*FIELD_RANG;
 
-    private Timeline progressBarTimeline = new Timeline(
+    List<Moss> mossList = new ArrayList<>();
+
+    private final Timeline progressBarTimeline = new Timeline(
             new KeyFrame(
                     Duration.seconds(0),
                     event -> yearPassed(1)
@@ -29,26 +31,18 @@ public class MainController {
             )
     );
 
-    @FXML private Pane rootPane;
     @FXML private TilePane field;
-    @FXML private Button oneYearStepButton;
-    @FXML private Button tenYearStepButton;
-    @FXML private Button resetSimButton;
-    @FXML private Button runSimButton;
-    @FXML private Button stopSimButton;
     @FXML private ProgressBar progressBar;
 
-    public void initialize( ) throws Exception {
+    public void initialize( ){
 
-        int fieldSize = FIELD_RANG*FIELD_RANG;
+        progressBar.setProgress(0.0);
 
-        for (int i = 1; i <= fieldSize; i++) {
-            Rectangle rect = new Rectangle(10,10){{
-                setFill(Color.LIGHTGRAY);}
-            };
-            field.getChildren().add(rect);
-            progressBar.setProgress(0.0);
-        }
+        for (int i = 0; i < FIELD_RANG; i++)
+            for (int j = 0; j < FIELD_RANG; j++)
+                field.getChildren().add(new SoilRectangle(i,j));
+
+        Moss.plant((SoilRectangle) field.getChildren().get(11*FIELD_RANG + 11), mossList);
     }
 
     @FXML private void oneYearStepButtonClick() {
@@ -59,8 +53,16 @@ public class MainController {
     }
     @FXML private void resetSimButtonClick() {
 
-        System.out.println("resetSimButton");
+        if (progressBarTimeline.getStatus() == Animation.Status.RUNNING)
+            progressBarTimeline.stop();
+
         progressBar.setProgress(0.0);
+
+        mossList.clear();
+        for (int i =0; i<FIELD_SIZE; i++)
+            ((SoilRectangle) field.getChildren().get(i)).setFill(Color.LIGHTGRAY);
+
+        Moss.plant((SoilRectangle) field.getChildren().get(11*FIELD_RANG + 11), mossList);
     }
     @FXML private void runSimButtonClick() {
 
@@ -80,9 +82,12 @@ public class MainController {
             {
                 progressBar.setProgress(progressBar.getProgress() + 0.01);
 
+                int numOfProcessedPlantsFromList = mossList.size();
+                for (int j=0;j<numOfProcessedPlantsFromList;j++)
+                    mossList.get(j).process(field, mossList);
 
-                //Обработка симуляции
-                CallWind();
+                //CallWind();
+
 
 
                 if (progressBar.getProgress() >= 1.00){
@@ -90,7 +95,7 @@ public class MainController {
                         progressBarTimeline.stop();
 
                     Alert infoAlert = new Alert(Alert.AlertType.INFORMATION);
-                    infoAlert.setTitle("Удар - поднятие!!!");
+                    infoAlert.setTitle("Поздравляем!!!");
                     infoAlert.setHeaderText("Вы закончили симуляцию!");
                     infoAlert.show();
                 }
@@ -116,12 +121,12 @@ public class MainController {
         int plantPlaceRow;
 
         //Moss section
-        int numOfMossPlantedSeeds = getRndIntInRange(1, 3);
+        int numOfMossPlantedSeeds = getRndIntInRange(1, 1);
         for  (int i=1; i<=numOfMossPlantedSeeds; i++)
         {
             plantPlaceColumn = getRndIntInRange(0, FIELD_RANG-1);
             plantPlaceRow = getRndIntInRange(0, FIELD_RANG-1);
-            PlantSeed(new Moss(plantPlaceColumn, plantPlaceRow));
+            Moss.dropSeed((SoilRectangle) field.getChildren().get(plantPlaceColumn + plantPlaceRow*FIELD_RANG), mossList);
         }
 
         //Grass section
@@ -129,10 +134,5 @@ public class MainController {
 
     public static int getRndIntInRange(int min, int max){
         return (int)(Math.random()*((max-min)+1))+min;
-    }
-
-    private boolean PlantSeed(Moss plantSeed)
-    {
-
     }
 }

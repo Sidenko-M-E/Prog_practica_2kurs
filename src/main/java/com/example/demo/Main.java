@@ -21,9 +21,6 @@ import java.util.List;
 
 public class Main extends Application{
 
-    List<Moss> mossList = new ArrayList<>();
-    List<Grass> grassList = new ArrayList<>();
-
     public static void main(String[] args) {
 
         Application.launch(args);

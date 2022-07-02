@@ -1,25 +1,22 @@
 package com.example.demo;
 
 
-public class Plant{
-    int soilTileCordX;
-    int soilTileCordY;
+public abstract class Plant{
 
-    Plant(int cordX, int cordY){
-        soilTileCordX = cordX;
-        soilTileCordY = cordY;
+    protected SoilRectangle plantPlaceRect;
+    protected double bioMassGen;
+
+    Plant(SoilRectangle rectForPlant){
+        plantPlaceRect = rectForPlant;
+        bioMassGen = 0;
     }
 
-    public int getSoilTileCordX(){
-        return soilTileCordX;
+    public SoilRectangle getPlantPlaceRect() {
+        return plantPlaceRect;
     }
-
-    public int getSoilTileCordY(){
-        return soilTileCordY;
-    }
-
-    public int setSoilTileCordX{
-
+    public double getBioGen()
+    {
+        return bioMassGen;
     }
 
 }
