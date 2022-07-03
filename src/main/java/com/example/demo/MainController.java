@@ -19,9 +19,12 @@ public class MainController {
     private static final int FIELD_RANG = 23;
     private static final int FIELD_SIZE = FIELD_RANG*FIELD_RANG;
 
-    ObservableList<Moss> mossList = FXCollections.observableArrayList();
+    List<Moss> mossList = new ArrayList<>();
     List<Grass> grassList = new ArrayList<>();
     List<Bush> bushList = new ArrayList<>();
+    List<DeciduousTree> dtreeList = new ArrayList<>();
+    List<ConiferousTree> ctreeList = new ArrayList<>();
+
 
     private final Timeline progressBarTimeline = new Timeline(new KeyFrame(Duration.seconds(0),event -> yearPassed(1)),new KeyFrame(Duration.seconds(0.5)));
 
@@ -84,11 +87,11 @@ public class MainController {
 
                 int numOfProcessedPlantsFromList = mossList.size();
                 for (int j=0;j<numOfProcessedPlantsFromList;j++)
-                    mossList.get(j).process(field, mossList);
+                    mossList.get(j).process(mossList);
 
                 numOfProcessedPlantsFromList = grassList.size();
                 for (int j=0;j<numOfProcessedPlantsFromList;j++)
-                    grassList.get(j).process(field, mossList, grassList);
+                    grassList.get(j).process(mossList, grassList);
 
 
                 numOfProcessedPlantsFromList = bushList.size();
@@ -96,9 +99,39 @@ public class MainController {
                 for (int j=0; j < numOfProcessedPlantsFromList; j++)
                 {
                     bushListSizeBeforeProcessing = bushList.size();
-                    bushList.get(j).process(field, mossList, grassList, bushList);
+                    bushList.get(j).process(mossList, grassList, bushList);
 
                     if (bushList.size() < bushListSizeBeforeProcessing)
+                    {
+                        j--;
+                        numOfProcessedPlantsFromList--;
+                    }
+                }
+
+
+                numOfProcessedPlantsFromList = dtreeList.size();
+                int dtreeListSizeBeforeProcessing;
+                for (int j=0; j < numOfProcessedPlantsFromList; j++)
+                {
+                    dtreeListSizeBeforeProcessing = dtreeList.size();
+                    dtreeList.get(j).process(mossList, grassList, bushList, dtreeList);
+
+                    if (dtreeList.size() < dtreeListSizeBeforeProcessing)
+                    {
+                        j--;
+                        numOfProcessedPlantsFromList--;
+                    }
+                }
+
+
+                numOfProcessedPlantsFromList = ctreeList.size();
+                int ctreeListSizeBeforeProcessing;
+                for (int j=0; j < numOfProcessedPlantsFromList; j++)
+                {
+                    ctreeListSizeBeforeProcessing = ctreeList.size();
+                    ctreeList.get(j).process(mossList, grassList, bushList, ctreeList);
+
+                    if (ctreeList.size() < ctreeListSizeBeforeProcessing)
                     {
                         j--;
                         numOfProcessedPlantsFromList--;
@@ -109,10 +142,10 @@ public class MainController {
                 System.out.println("-------------------------------YEAR "+
                         (int)(progressBar.getProgress()*10000) +
                         "-------------------------------");///////////////////////////////////////////////////////////
-                System.out.println("m: "+mossList.size()+" /g: " + grassList.size());/////////////////////////////////////////////////////////////////////////////////
+                System.out.println("m: "+mossList.size()+" g: " + grassList.size() + " b: " + bushList.size() + " dt: " + dtreeList.size() + " ct: " + ctreeList.size());/////////////////////////////////////////////////////////////////////////////////
                 System.out.println("-------------------------------------------------------------");
 
-                CallWind(0,4,2);
+                CallWind(0,4,0, 2, 2);
 
 
                 if (progressBar.getProgress() >= 1.00){
@@ -141,7 +174,7 @@ public class MainController {
         }
     }
 
-    private void CallWind(int numOfMossPlantedSeeds, int numOfGrassPlantedSeeds, int numOfBushPlantedSeeds){
+    private void CallWind(int numOfMossPlantedSeeds, int numOfGrassPlantedSeeds, int numOfBushPlantedSeeds, int numOfDTreePlantedSeeds, int numOfCTreePlantedSeeds){
         int plantPlaceColumn;
         int plantPlaceRow;
 
@@ -161,12 +194,28 @@ public class MainController {
             Grass.dropSeed((SoilRectangle) field.getChildren().get(plantPlaceColumn + plantPlaceRow*FIELD_RANG), mossList, grassList);
         }
 
-        //Grass section
+        //Bush section
         for  (int i=1; i<=numOfBushPlantedSeeds; i++)
         {
             plantPlaceColumn = Helper.randomWithRange(0, FIELD_RANG-1);
             plantPlaceRow = Helper.randomWithRange(0, FIELD_RANG-1);
             Bush.dropSeed((SoilRectangle) field.getChildren().get(plantPlaceColumn + plantPlaceRow*FIELD_RANG), mossList, grassList, bushList);
+        }
+
+        //DTree section
+        for  (int i=1; i<=numOfDTreePlantedSeeds; i++)
+        {
+            plantPlaceColumn = Helper.randomWithRange(0, FIELD_RANG-1);
+            plantPlaceRow = Helper.randomWithRange(0, FIELD_RANG-1);
+            DeciduousTree.dropSeed((SoilRectangle) field.getChildren().get(plantPlaceColumn + plantPlaceRow*FIELD_RANG), mossList, grassList, bushList, dtreeList);
+        }
+
+        //CTree section
+        for  (int i=1; i<=numOfCTreePlantedSeeds; i++)
+        {
+            plantPlaceColumn = Helper.randomWithRange(0, FIELD_RANG-1);
+            plantPlaceRow = Helper.randomWithRange(0, FIELD_RANG-1);
+            ConiferousTree.dropSeed((SoilRectangle) field.getChildren().get(plantPlaceColumn + plantPlaceRow*FIELD_RANG), mossList, grassList, bushList, ctreeList);
         }
     }
 }

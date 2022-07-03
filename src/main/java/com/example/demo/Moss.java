@@ -1,7 +1,6 @@
 package com.example.demo;
 
 import javafx.collections.ObservableList;
-import javafx.scene.layout.TilePane;
 import javafx.scene.paint.Color;
 import java.util.List;
 
@@ -30,10 +29,10 @@ public class Moss extends Plant{
         mossList.add(new Moss(rectForPlant));
     }
 
-    public void process(TilePane field, List<Moss> mossList) {
+    public void process(List<Moss> mossList) {
         plantPlaceRect.setFertilityLevel(plantPlaceRect.getFertilityLevel()+bioMassGen);
 
-        ObservableList<SoilRectangle> potentialPlantPlaces = plantPlaceRect.getNearInRadius(field.getChildren(), 1);
+        ObservableList<SoilRectangle> potentialPlantPlaces = plantPlaceRect.getNearInRadius(1);
         int numOfPotentialPlantPlaces = potentialPlantPlaces.size();
         boolean[] isRectInspected = new boolean[numOfPotentialPlantPlaces];
 

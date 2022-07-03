@@ -3,6 +3,7 @@ package com.example.demo;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
+import javafx.scene.layout.TilePane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
@@ -41,15 +42,16 @@ public class SoilRectangle extends Rectangle {
     {
         fertilityLevel = newValue;
     }
+    public void setPineCongestionLevel(double newValue){ pineCongestionLevel = newValue; }
 
     public void setToUncolonized(){
         fertilityLevel = 0;
         pineCongestionLevel = 0;
         setFill(Color.LIGHTGRAY);
     }
-    public ObservableList<SoilRectangle> getNearInRadius(ObservableList<Node> field, int radius){
+    public ObservableList<SoilRectangle> getNearInRadius(int radius){
 
-        int rowLimit = (int) Math.sqrt(field.size())-1;
+        int rowLimit = (int) Math.sqrt(((TilePane)getParent()).getChildren().size())-1;
         int columnLimit = rowLimit;
         int i = getCordX();
         int j = getCordY();
@@ -58,21 +60,21 @@ public class SoilRectangle extends Rectangle {
         for(var x = Math.max(0, i-radius); x <= Math.min(i+radius, rowLimit); x++) {
             for(var y = Math.max(0, j-radius); y <= Math.min(j+radius, columnLimit); y++) {
                 if(x != i || y != j)
-                    returnListOfNear.add((SoilRectangle) field.get(x+y*(columnLimit+1)));
+                    returnListOfNear.add((SoilRectangle) (((TilePane)getParent()).getChildren()).get(x+y*(columnLimit+1)));
             }
         }
 
         return returnListOfNear;
     }
 
-    public ObservableList<SoilRectangle> getNearInRing(ObservableList<Node> field, int innerRadius, int outerRadius){
+    public ObservableList<SoilRectangle> getNearInRing(int innerRadius, int outerRadius){
 
-        int rowLimit = (int) Math.sqrt(field.size())-1;
+        int rowLimit = (int) Math.sqrt(((TilePane)getParent()).getChildren().size()-1);
         ObservableList<SoilRectangle> returnListOfNear;
 
-        SoilRectangle centerRect = (SoilRectangle) field.get(getCordX()+getCordY()*rowLimit);
-        returnListOfNear = centerRect.getNearInRadius(field, outerRadius);
-        returnListOfNear.removeAll(centerRect.getNearInRadius(field, innerRadius));
+        SoilRectangle centerRect = (SoilRectangle) ((TilePane)getParent()).getChildren().get(getCordX()+getCordY()*rowLimit);
+        returnListOfNear = centerRect.getNearInRadius(outerRadius);
+        returnListOfNear.removeAll(centerRect.getNearInRadius(innerRadius));
 
         return returnListOfNear;
     }

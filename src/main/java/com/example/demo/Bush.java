@@ -1,6 +1,7 @@
 package com.example.demo;
 
 import javafx.collections.ObservableList;
+import javafx.scene.Node;
 import javafx.scene.layout.TilePane;
 import javafx.scene.paint.Color;
 
@@ -60,10 +61,8 @@ public class Bush extends Plant{
                 plant(rectForPlant, bushList);
                 return true;
             }
-                return false;
         }
-        else
-            return false;
+        return false;
     }
 
     public static void plant(SoilRectangle rectForPlant, List<Bush> bushList){
@@ -71,7 +70,7 @@ public class Bush extends Plant{
         bushList.add(new Bush(rectForPlant));
     }
 
-    public void process(TilePane field, List<Moss> mossList, List<Grass> grassList, List<Bush> bushList) {
+    public void process(List<Moss> mossList, List<Grass> grassList, List<Bush> bushList) {
         age++;
         
         if (age >= BUSH_OLD_AGE)
@@ -98,7 +97,7 @@ public class Bush extends Plant{
             storedBioMass += bioMassGen * BUSH_STORED_BIO_MASS_PROC;
             plantPlaceRect.setFertilityLevel(plantPlaceRect.getFertilityLevel()+bioMassGen*(1-BUSH_STORED_BIO_MASS_PROC));
 
-            ObservableList<SoilRectangle> potentialPlantPlaces = plantPlaceRect.getNearInRing(field.getChildren(), 3,5);
+            ObservableList<SoilRectangle> potentialPlantPlaces = plantPlaceRect.getNearInRing(3,5);
             int numOfPotentialPlantPlaces = potentialPlantPlaces.size();
             boolean[] isRectInspected = new boolean[numOfPotentialPlantPlaces];
 

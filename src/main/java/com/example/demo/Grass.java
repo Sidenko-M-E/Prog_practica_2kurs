@@ -1,10 +1,8 @@
 package com.example.demo;
 
 import javafx.collections.ObservableList;
-import javafx.scene.layout.TilePane;
 import javafx.scene.paint.Color;
 
-import java.util.Iterator;
 import java.util.List;
 
 public class Grass extends Plant{
@@ -51,10 +49,10 @@ public class Grass extends Plant{
         grassList.add(new Grass(rectForPlant));
     }
 
-    public void process(TilePane field, List<Moss> mossList, List<Grass> grassList) {
+    public void process(List<Moss> mossList, List<Grass> grassList) {
         plantPlaceRect.setFertilityLevel(plantPlaceRect.getFertilityLevel()+bioMassGen);
 
-        ObservableList<SoilRectangle> potentialPlantPlaces = plantPlaceRect.getNearInRadius(field.getChildren(), 2);
+        ObservableList<SoilRectangle> potentialPlantPlaces = plantPlaceRect.getNearInRadius(2);
         int numOfPotentialPlantPlaces = potentialPlantPlaces.size();
         boolean[] isRectInspected = new boolean[numOfPotentialPlantPlaces];
 
