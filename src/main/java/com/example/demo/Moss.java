@@ -3,7 +3,6 @@ package com.example.demo;
 import javafx.collections.ObservableList;
 import javafx.scene.layout.TilePane;
 import javafx.scene.paint.Color;
-import java.util.Arrays;
 import java.util.List;
 
 public class Moss extends Plant{
@@ -36,12 +35,12 @@ public class Moss extends Plant{
 
         ObservableList<SoilRectangle> potentialPlantPlaces = plantPlaceRect.getNearInRadius(field.getChildren(), 1);
         int numOfPotentialPlantPlaces = potentialPlantPlaces.size();
-        boolean isRectInspected[] = new boolean[numOfPotentialPlantPlaces];
+        boolean[] isRectInspected = new boolean[numOfPotentialPlantPlaces];
 
         int plantPlaceIndex;
         do{
             plantPlaceIndex = (int)(Math.random()*numOfPotentialPlantPlaces);
             isRectInspected[plantPlaceIndex] = true;
-        }while(!Moss.dropSeed(potentialPlantPlaces.get(plantPlaceIndex),mossList) && Arrays.asList(isRectInspected).contains(false));
+        }while(!Moss.dropSeed(potentialPlantPlaces.get(plantPlaceIndex),mossList) && List.of(isRectInspected).contains(false));
     }
 }
