@@ -33,9 +33,10 @@ public class Main extends Application{
         Scene scene = new Scene(root);
         stage.setScene(scene);
 
-        stage.setTitle("Симулятор первичной сукцессии");
+        stage.setTitle("Симулятор смены природных сообществ");
         stage.setWidth(625);
         stage.setHeight(465);
+        stage.setResizable(false);
 
         stage.show();
     }

@@ -6,19 +6,29 @@ import javafx.scene.paint.Color;
 import java.util.List;
 
 public class DeciduousTree extends Plant{
-    public static double DTREE_BIO_GEN_APPR_NUM = 2;
-    public static double DTREE_BIO_GEN_SPREAD_PROC = 0.2;
-    public static double DTREE_STORED_BIO_MASS_PROC = 0.2;
-    public static int DTREE_OLD_AGE = 20;
-    private static int DTREE_FULL_GROWN_AGE = 10;
+    //Constants
+    private static double DTREE_BIO_GEN_APPR_NUM = 100;
+    private static double DTREE_BIO_GEN_SPREAD_PROC = 0.05;
+    private static double DTREE_STORED_BIO_MASS_PROC = 0.65;
+
+    private static double DTREE_MIN_FERT_LEVEL = 30;
+    private static double DTREE_MAX_CONG_LEVEL = 10;
+
+    private static int DTREE_DELETE_AGE = 105;
+    private static int DTREE_DRY_AGE = 100;
+    private static int DTREE_OLD_AGE = 80;
+    private static int DTREE_FULL_GROWN_AGE = 60;
+    private static int DTREE_MIDDLE_AGE = 10;
 
 
+    //Properties
     private int age;
     private double storedBioMass;
     private double bioMassGenFullGrown;
-
     private ObservableList<SoilRectangle> treeCroneCoveredSoil;
 
+
+    //Constructor
     DeciduousTree(SoilRectangle rectForPlant){
         super(rectForPlant);
         age = 0;
@@ -27,23 +37,33 @@ public class DeciduousTree extends Plant{
         treeCroneCoveredSoil = rectForPlant.getNearInRadius(1);
     }
 
+
+    //Static methods
     public static boolean dropSeed(SoilRectangle rectForPlant, List<Moss> mossList, List<Grass> grassList, List<Bush> bushList, List<DeciduousTree> dtreeList) {
-        if ((rectForPlant.getFertilityLevel() >= 30) &&
-                (rectForPlant.getPineCongestionLevel() <= 15))
+        if ((rectForPlant.getFertilityLevel() >= DTREE_MIN_FERT_LEVEL) && (rectForPlant.getPineCongestionLevel() < DTREE_MAX_CONG_LEVEL))
         {
-            ObservableList<SoilRectangle> listOfNear = rectForPlant.getNearInRadius(3);
-            for (SoilRectangle soilRect : listOfNear) {
-                if (soilRect.getFill() == Color.BROWN || soilRect.getFill() == Color.FORESTGREEN)
+            //Под другими лситвенными расти не будут, но будут расти рядом
+            ObservableList<SoilRectangle> listOfNearDeciduous = rectForPlant.getNearInRadius(4);
+            for (SoilRectangle soilRect : listOfNearDeciduous) {
+                if (soilRect.getFill() == Color.BROWN)
                     return false;
             }
 
-            if (rectForPlant.getFill() == Color.LIGHTGRAY)
-            {
+            //Под другими хвойными расти не будут, но будут расти рядом
+            ObservableList<SoilRectangle> listOfNearConiferous = rectForPlant.getNearInRadius(5);
+            for (SoilRectangle soilRect : listOfNearConiferous) {
+                if (soilRect.getFill() == Color.LIGHTSEAGREEN)
+                    return false;
+            }
+
+            //Будет расти на месте почвы
+            if (rectForPlant.getFill() == Color.LIGHTGRAY) {
                 plant(rectForPlant, dtreeList);
                 return true;
             }
-            else if (rectForPlant.getFill() == Color.DARKOLIVEGREEN)
-            {
+
+            //Будет расти на месте мха
+            else if (rectForPlant.getFill() == Color.DARKOLIVEGREEN) {
                 for (int i=0;i< mossList.size();i++)
                 {
                     if (mossList.get(i).getPlantPlaceRect() == rectForPlant)
@@ -55,8 +75,9 @@ public class DeciduousTree extends Plant{
                 plant(rectForPlant, dtreeList);
                 return true;
             }
-            else if(rectForPlant.getFill() == Color.LIGHTGREEN)
-            {
+
+            //Будет расти на месте травы
+            else if(rectForPlant.getFill() == Color.LIGHTGREEN) {
                 for (int i=0;i< grassList.size();i++)
                 {
                     if (grassList.get(i).getPlantPlaceRect() == rectForPlant)
@@ -68,6 +89,8 @@ public class DeciduousTree extends Plant{
                 plant(rectForPlant, dtreeList);
                 return true;
             }
+
+            //Не будет расти на месте кустарника и умирающих многолетних
             return false;
         }
         else
@@ -79,56 +102,125 @@ public class DeciduousTree extends Plant{
         dtreeList.add(new DeciduousTree(rectForPlant));
     }
 
+
+    //Methods
     public void process(List<Moss> mossList, List<Grass> grassList, List<Bush> bushList, List<DeciduousTree> dtreeList) {
         age++;
 
-        //Расчитать в завиисимости от возраста умирания
-        if (age >= DTREE_OLD_AGE)
+        if (age == DTREE_DELETE_AGE)
         {
-            if (age == DTREE_OLD_AGE)
-            {
-                plantPlaceRect.setFertilityLevel(plantPlaceRect.getFertilityLevel()+bioMassGen/3);
-                bioMassGen = bioMassGen*2/3;
+            getPlantPlaceRect().setFill(Color.LIGHTGRAY);
+            dtreeList.remove(this);
+        }
+        if (age >= DTREE_DRY_AGE)
+        {
+            //Убираем крону
+            treeCroneCoveredSoil.clear();
+
+            //Цвет - разгающийся
+            plantPlaceRect.setFill(Color.DARKKHAKI);
+
+            //Разложение ствола дерева
+            plantPlaceRect.setFertilityLevel(plantPlaceRect.getFertilityLevel()+storedBioMass/(DTREE_DELETE_AGE-DTREE_DRY_AGE));
+        }
+        else if (age >= DTREE_OLD_AGE)
+        {
+            //Уменьшаем кол-во генерируемой биомассы
+            bioMassGen = bioMassGenFullGrown*(DTREE_DRY_AGE -age)/(DTREE_DRY_AGE - DTREE_OLD_AGE);
+
+            //Запасаем биомассу в растении
+            storedBioMass += bioMassGen * DTREE_STORED_BIO_MASS_PROC;
+
+            //Уменьшаем крону, при достижении возраста половины от старости к гибели
+            if (age == DTREE_OLD_AGE+(DTREE_DRY_AGE -DTREE_OLD_AGE)/2) {
+                treeCroneCoveredSoil.clear();
+                treeCroneCoveredSoil = getPlantPlaceRect().getNearInRadius(1);
             }
-            else if (age == DTREE_OLD_AGE+1)
-            {
-                plantPlaceRect.setFertilityLevel(plantPlaceRect.getFertilityLevel()+bioMassGen/2);
-                bioMassGen=bioMassGen/2;
-            }
-            else
-            {
-                plantPlaceRect.setFertilityLevel(plantPlaceRect.getFertilityLevel()+bioMassGen);
-                getPlantPlaceRect().setFill(Color.LIGHTGRAY);
-                dtreeList.remove(this);
+
+            //Распределяем опад по площади кроны
+            for (SoilRectangle soilRect : treeCroneCoveredSoil) {
+                soilRect.setFertilityLevel(plantPlaceRect.getFertilityLevel()+
+                        bioMassGen*(1-DTREE_STORED_BIO_MASS_PROC)/treeCroneCoveredSoil.size());
             }
         }
         else if (age >= DTREE_FULL_GROWN_AGE)
         {
+            //Запасаем биомассу в растении
             storedBioMass += bioMassGen * DTREE_STORED_BIO_MASS_PROC;
 
+            //Увеличиваем крону по достижении взрослого возраста
+            if (age == DTREE_FULL_GROWN_AGE) {
+                treeCroneCoveredSoil.clear();
+                treeCroneCoveredSoil = getPlantPlaceRect().getNearInRadius(2);
+            }
+
+            //Распределяем опад по площади кроны
             for (SoilRectangle soilRect : treeCroneCoveredSoil) {
-                plantPlaceRect.setFertilityLevel(plantPlaceRect.getFertilityLevel()+
+                soilRect.setFertilityLevel(plantPlaceRect.getFertilityLevel()+
                         bioMassGen*(1-DTREE_STORED_BIO_MASS_PROC)/treeCroneCoveredSoil.size());
             }
 
-            ObservableList<SoilRectangle> potentialPlantPlaces = plantPlaceRect.getNearInRing(4,6);
-            int numOfPotentialPlantPlaces = potentialPlantPlaces.size();
-            boolean[] isRectInspected = new boolean[numOfPotentialPlantPlaces];
+            //Оставляем потомство
+            {
+                ObservableList<SoilRectangle> potentialPlantPlaces = plantPlaceRect.getNearInRing(5,6);
+                int numOfPotentialPlantPlaces = potentialPlantPlaces.size();
+                boolean[] isRectInspected = new boolean[numOfPotentialPlantPlaces];
 
-            int plantPlaceIndex;
-            int numOfSeedsToDrop = Helper.randomWithRange(1,2);
-            do{
-                plantPlaceIndex = Helper.randomWithRange(0,numOfPotentialPlantPlaces-1);
-                isRectInspected[plantPlaceIndex] = true;
-                if(DeciduousTree.dropSeed(potentialPlantPlaces.get(plantPlaceIndex), mossList, grassList, bushList, dtreeList))
-                    numOfSeedsToDrop--;
+                int plantPlaceIndex;
+                int numOfSeedsToDrop = Helper.randomWithRange(1,2);
+                do{
+                    plantPlaceIndex = Helper.randomWithRange(0,numOfPotentialPlantPlaces-1);
+                    isRectInspected[plantPlaceIndex] = true;
+                    if(DeciduousTree.dropSeed(potentialPlantPlaces.get(plantPlaceIndex), mossList, grassList, bushList, dtreeList))
+                        numOfSeedsToDrop--;
 
-            }while((numOfSeedsToDrop>0) && List.of(isRectInspected).contains(false));
+                }while((numOfSeedsToDrop>0) && List.of(isRectInspected).contains(false));
+            }
+        }
+        else if(age >= DTREE_MIDDLE_AGE)
+        {
+            //Увеличиваем кол-во генерируемой биомассы
+            bioMassGen = bioMassGenFullGrown*(1-(double)(DTREE_FULL_GROWN_AGE-age)/(double)DTREE_FULL_GROWN_AGE);
+
+            //Запасаем биомассу в растении
+            storedBioMass += bioMassGen * DTREE_STORED_BIO_MASS_PROC;
+
+            //Увеличиваем крону, при достижении среднего возраста
+            if (age == DTREE_MIDDLE_AGE)
+                treeCroneCoveredSoil = getPlantPlaceRect().getNearInRadius(1);
+
+            //Распределяем опад по площади кроны
+            for (SoilRectangle soilRect : treeCroneCoveredSoil) {
+                soilRect.setFertilityLevel(plantPlaceRect.getFertilityLevel()+
+                        bioMassGen*(1-DTREE_STORED_BIO_MASS_PROC)/treeCroneCoveredSoil.size());
+            }
+
+            //Оставляем потомство
+            {
+                ObservableList<SoilRectangle> potentialPlantPlaces = plantPlaceRect.getNearInRing(5,6);//
+                int numOfPotentialPlantPlaces = potentialPlantPlaces.size();
+                boolean[] isRectInspected = new boolean[numOfPotentialPlantPlaces];
+
+                int plantPlaceIndex;
+                int numOfSeedsToDrop = Helper.randomWithRange(1,5);//
+                do{
+                    plantPlaceIndex = Helper.randomWithRange(0,numOfPotentialPlantPlaces-1);
+                    isRectInspected[plantPlaceIndex] = true;
+                    if(DeciduousTree.dropSeed(potentialPlantPlaces.get(plantPlaceIndex), mossList, grassList, bushList, dtreeList))
+                        numOfSeedsToDrop--;
+                }while((numOfSeedsToDrop>0) && List.of(isRectInspected).contains(false));
+            }
+
         }
         else
         {
-            bioMassGen = bioMassGenFullGrown*(1-0.1*(DTREE_FULL_GROWN_AGE-age));
+            //Увеличиваем кол-во генерируемой биомассы
+            bioMassGen = bioMassGenFullGrown*(1-(double)(DTREE_FULL_GROWN_AGE-age)/(double)DTREE_FULL_GROWN_AGE);
+
+            //Запасаем биомассу в растении
             storedBioMass += bioMassGen * DTREE_STORED_BIO_MASS_PROC;
+
+            //Опад в рамках одной клетки
             plantPlaceRect.setFertilityLevel(plantPlaceRect.getFertilityLevel()+bioMassGen*(1-DTREE_STORED_BIO_MASS_PROC));
         }
     }

@@ -3,8 +3,6 @@ package com.example.demo;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ProgressBar;
@@ -57,6 +55,8 @@ public class MainController {
         mossList.clear();
         grassList.clear();
         bushList.clear();
+        dtreeList.clear();
+        ctreeList.clear();
 
         for (int i =0; i<FIELD_SIZE; i++)
         {
@@ -82,16 +82,37 @@ public class MainController {
         {
             if (progressBar.getProgress() < 1.00)
             {
-                progressBar.setProgress(progressBar.getProgress() + 0.01);
+                progressBar.setProgress(progressBar.getProgress() + 0.005);
 
 
                 int numOfProcessedPlantsFromList = mossList.size();
-                for (int j=0;j<numOfProcessedPlantsFromList;j++)
+                int mossListSizeBeforeProcessing;
+                for (int j=0; j < numOfProcessedPlantsFromList; j++)
+                {
+                    mossListSizeBeforeProcessing = mossList.size();
                     mossList.get(j).process(mossList);
 
+                    if (mossList.size() < mossListSizeBeforeProcessing)
+                    {
+                        j--;
+                        numOfProcessedPlantsFromList--;
+                    }
+                }
+
+
                 numOfProcessedPlantsFromList = grassList.size();
-                for (int j=0;j<numOfProcessedPlantsFromList;j++)
+                int grassListSizeBeforeProcessing;
+                for (int j=0; j < numOfProcessedPlantsFromList; j++)
+                {
+                    grassListSizeBeforeProcessing = grassList.size();
                     grassList.get(j).process(mossList, grassList);
+
+                    if (grassList.size() < grassListSizeBeforeProcessing)
+                    {
+                        j--;
+                        numOfProcessedPlantsFromList--;
+                    }
+                }
 
 
                 numOfProcessedPlantsFromList = bushList.size();
@@ -140,13 +161,16 @@ public class MainController {
 
 
                 System.out.println("-------------------------------YEAR "+
-                        (int)(progressBar.getProgress()*10000) +
+                        (int)(progressBar.getProgress()*200) +
                         "-------------------------------");///////////////////////////////////////////////////////////
-                System.out.println("m: "+mossList.size()+" g: " + grassList.size() + " b: " + bushList.size() + " dt: " + dtreeList.size() + " ct: " + ctreeList.size());/////////////////////////////////////////////////////////////////////////////////
+                System.out.println("m: "+ mossList.size()+" g: " + grassList.size() + " b: " + bushList.size() + " dt: " + dtreeList.size() + " ct: " + ctreeList.size());/////////////////////////////////////////////////////////////////////////////////
                 System.out.println("-------------------------------------------------------------");
 
-                CallWind(0,4,0, 2, 2);
 
+                CallWind(2,8,3, 2, 2);
+
+                if (progressBar.getProgress()*200 >= 70)
+                    CallWind(4,0,0,0,0);
 
                 if (progressBar.getProgress() >= 1.00){
                     if (progressBarTimeline.getStatus() == Animation.Status.RUNNING)
