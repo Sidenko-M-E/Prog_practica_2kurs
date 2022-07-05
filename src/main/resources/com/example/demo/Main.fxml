@@ -1,21 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
+<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<Pane xmlns:fx="http://javafx.com/fxml/1" fx:id="rootPane" maxHeight="450.0" maxWidth="630.0" minHeight="450.0" minWidth="630.0"
-      xmlns="http://javafx.com/javafx/16" fx:controller="com.example.demo.MainController">
-    <FlowPane layoutX="300.0" layoutY="345.0" maxWidth="280.0" hgap="10.0" vgap="10.0">
-        <Button fx:id="oneYearStepButton" mnemonicParsing="false" onAction="#oneYearStepButtonClick" text="Шаг (1 год)" textAlignment="CENTER"/>
-        <Button fx:id="tenYearStepButton" mnemonicParsing="false" onAction="#tenYearStepButtonClick" text="Шаг (10 лет)" textAlignment="CENTER" />
-        <Button fx:id="resetSimButton" mnemonicParsing="false" onAction="#resetSimButtonClick" prefHeight="25.0" prefWidth="100.0" text="Сброс" textAlignment="CENTER" />
-        <Button fx:id="runSimButton" mnemonicParsing="false" onAction="#runSimButtonClick" prefHeight="25.0" prefWidth="135.0" text="Запуск" textAlignment="CENTER" />
-        <Button fx:id="stopSimButton" mnemonicParsing="false" onAction="#stopSimButtonClick" prefHeight="25.0" prefWidth="135.0" text="Остановка" textAlignment="CENTER" />
-    </FlowPane>
+<SplitPane xmlns:fx="http://javafx.com/fxml/1" dividerPositions="0.5" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="400.0"
+           minWidth="600.0" prefHeight="400.0" prefWidth="590.0" xmlns="http://javafx.com/javafx/16"
+           fx:controller="com.example.demo.MainController">
+    <Pane prefHeight="380.0" prefWidth="275.0">
+        <TextArea fx:id="logTextArea" editable="false" layoutY="5.0" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="380.0" prefWidth="265.0">
+         <opaqueInsets>
+            <Insets />
+         </opaqueInsets></TextArea>
+      <opaqueInsets>
+         <Insets />
+      </opaqueInsets>
+      <cursor>
+         <Cursor fx:constant="OPEN_HAND" />
+      </cursor>
+    </Pane>
 
-    <ProgressBar fx:id="progressBar" layoutX="300.0" layoutY="316.0" prefHeight="18.0" prefWidth="279.0" />
+    <VBox fx:id="simArea" alignment="CENTER" maxHeight="380.0" maxWidth="300.0" minHeight="380.0" minWidth="300.0" prefHeight="380.0" prefWidth="300.0" spacing="10.0">
+        <TilePane fx:id="field" hgap="2" prefHeight="280.0" prefWidth="280.0" vgap="2">
+        </TilePane>
 
-    <TilePane fx:id="field" hgap="2" layoutX="300.0" layoutY="25.0" prefHeight="280.0" prefWidth="280.0" vgap="2">
-    </TilePane>
+        <ProgressBar fx:id="progressBar" maxWidth="1.7976931348623157E308" />
 
-</Pane>
+        <FlowPane alignment="TOP_CENTER" columnHalignment="CENTER" hgap="5.0" layoutX="10.0" maxWidth="1.7976931348623157E308" vgap="10.0">
+            <Button fx:id="oneYearStepButton" mnemonicParsing="false" onAction="#oneYearStepButtonClick" prefHeight="25.0" prefWidth="88.0" text="Шаг (1 год)" textAlignment="CENTER" />
+            <Button fx:id="tenYearStepButton" mnemonicParsing="false" onAction="#tenYearStepButtonClick" prefHeight="25.0" prefWidth="88.0" text="Шаг (10 лет)" textAlignment="CENTER" />
+            <Button fx:id="resetSimButton" mnemonicParsing="false" onAction="#resetSimButtonClick" prefHeight="25.0" prefWidth="88.0" text="Сброс" textAlignment="CENTER" />
+            <Button fx:id="runSimButton" mnemonicParsing="false" onAction="#runSimButtonClick" prefHeight="25.0" prefWidth="135.0" text="Запуск" textAlignment="CENTER" />
+            <Button fx:id="stopSimButton" mnemonicParsing="false" onAction="#stopSimButtonClick" prefHeight="25.0" prefWidth="134.0" text="Остановка" textAlignment="CENTER" />
+        </FlowPane>
+      <padding>
+         <Insets left="15.0" right="11.0" />
+      </padding>
+    </VBox>
+
+
+
+   <padding>
+      <Insets bottom="10.0" left="20.0" right="10.0" top="10.0" />
+   </padding>
+
+</SplitPane>

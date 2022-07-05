@@ -3,10 +3,14 @@ package com.example.demo;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.control.TextArea;
 import javafx.scene.layout.TilePane;
+import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,8 +32,17 @@ public class MainController {
 
     @FXML private TilePane field;
     @FXML private ProgressBar progressBar;
+    @FXML private TextArea logTextArea;
+    @FXML private VBox simArea;
 
     public void initialize( ){
+
+        logTextArea.textProperty().addListener(new ChangeListener<Object>() {
+            @Override
+            public void changed(ObservableValue<?> observableValue, Object o, Object t1) {
+                logTextArea.setScrollTop(Double.MAX_VALUE);
+            }
+        });
 
         progressBar.setProgress(0.0);
 
@@ -48,6 +61,8 @@ public class MainController {
     }
     @FXML private void resetSimButtonClick() {
 
+        logTextArea.clear();
+
         if (progressBarTimeline.getStatus() == Animation.Status.RUNNING)
             progressBarTimeline.stop();
         progressBar.setProgress(0.0);
@@ -63,8 +78,6 @@ public class MainController {
             ((SoilRectangle) field.getChildren().get(i)).setToUncolonized();
         }
         Moss.plant((SoilRectangle) field.getChildren().get(11*FIELD_RANG + 11), mossList);
-
-        System.out.flush();//////////////////////////////////////////////////////////////////////////////////////////////
     }
     @FXML private void runSimButtonClick() {
 
@@ -160,11 +173,9 @@ public class MainController {
                 }
 
 
-                System.out.println("-------------------------------YEAR "+
-                        (int)(progressBar.getProgress()*200) +
-                        "-------------------------------");///////////////////////////////////////////////////////////
-                System.out.println("m: "+ mossList.size()+" g: " + grassList.size() + " b: " + bushList.size() + " dt: " + dtreeList.size() + " ct: " + ctreeList.size());/////////////////////////////////////////////////////////////////////////////////
-                System.out.println("-------------------------------------------------------------");
+                logTextArea.appendText("-----------------YEAR "+ +(int)(progressBar.getProgress()*200) + "---------------------\n");
+                logTextArea.appendText("moss: "+ mossList.size()+" grass: " + grassList.size() + " bush: " + bushList.size() + "\n" +
+                        "deciduous tree: " + dtreeList.size() + " coniferous tree: " + ctreeList.size()+"\n\n");
 
 
                 CallWind(2,8,3, 2, 2);

@@ -1,22 +1,11 @@
 package com.example.demo;
 
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
 import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextField;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import javafx.util.Duration;
-
-import java.util.ArrayList;
-import java.util.List;
 
 
 public class Main extends Application{
@@ -34,9 +23,11 @@ public class Main extends Application{
         stage.setScene(scene);
 
         stage.setTitle("Симулятор смены природных сообществ");
-        stage.setWidth(625);
-        stage.setHeight(465);
+        stage.setWidth(630);//650
+        stage.setHeight(450);
         stage.setResizable(false);
+
+        stage.getIcons().add(new Image(getClass().getResourceAsStream("forest.png")));
 
         stage.show();
     }

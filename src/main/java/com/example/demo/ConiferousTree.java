@@ -126,7 +126,7 @@ public class ConiferousTree extends Plant{
         else if(age >= CTREE_MIDDLE_AGE)
         {
             //Увеличиваем кол-во генерируемой биомассы
-            bioMassGen = bioMassGenFullGrown*(1-((double)CTREE_FULL_GROWN_AGE-(double)age)/(double)CTREE_FULL_GROWN_AGE);
+            bioMassGen = bioMassGenFullGrown*(1-(CTREE_FULL_GROWN_AGE-age)/CTREE_FULL_GROWN_AGE);
 
             //Запасаем биомассу в растении
             storedBioMass += bioMassGen * CTREE_STORED_BIO_MASS_PROC;
@@ -164,7 +164,7 @@ public class ConiferousTree extends Plant{
         else
         {
             //Увеличиваем кол-во генерируемой биомассы
-            bioMassGen = bioMassGenFullGrown*(1-((double)CTREE_FULL_GROWN_AGE-(double)age)/(double)CTREE_FULL_GROWN_AGE);
+            bioMassGen = bioMassGenFullGrown*(1-(CTREE_FULL_GROWN_AGE-age)/CTREE_FULL_GROWN_AGE);
 
             //Запасаем биомассу в растении
             storedBioMass += bioMassGen * CTREE_STORED_BIO_MASS_PROC;
