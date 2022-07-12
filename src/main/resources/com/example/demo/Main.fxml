@@ -1,48 +1,97 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.*?>
-<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
 
 <SplitPane xmlns:fx="http://javafx.com/fxml/1" dividerPositions="0.5" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="400.0"
-           minWidth="600.0" prefHeight="400.0" prefWidth="590.0" xmlns="http://javafx.com/javafx/16"
+           minWidth="650.0" prefHeight="400.0" prefWidth="650.0" xmlns="http://javafx.com/javafx/16"
            fx:controller="com.example.demo.MainController">
-    <Pane prefHeight="380.0" prefWidth="275.0">
-        <TextArea fx:id="logTextArea" editable="false" layoutY="5.0" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="380.0" prefWidth="265.0">
-         <opaqueInsets>
-            <Insets />
-         </opaqueInsets></TextArea>
-      <opaqueInsets>
-         <Insets />
-      </opaqueInsets>
-      <cursor>
-         <Cursor fx:constant="OPEN_HAND" />
-      </cursor>
-    </Pane>
+
+    <VBox fillWidth="false" prefHeight="380.0" prefWidth="260.0" spacing="15.0">
+        <TextArea fx:id="logTextArea" editable="false" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="271.0" prefWidth="290.0" />
+
+        <GridPane hgap="8.0" prefHeight="92.0" vgap="4.0">
+            <Label text="Условные обозначения объектов :" GridPane.columnIndex="0" GridPane.columnSpan="4" GridPane.rowIndex="0">
+            <font>
+               <Font size="14.0" />
+            </font></Label>
+
+            <Rectangle fill="darkolivegreen" height="12.0" width="12.0" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+            <Label text="- мох" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                <font>
+                    <Font size="14.0" />
+                </font></Label>
+
+            <Rectangle fill="lightgreen" height="12.0" width="12.0" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+            <Label text="- трава" GridPane.columnIndex="3" GridPane.rowIndex="1">
+                <font>
+                    <Font size="14.0" />
+                </font></Label>
+
+            <Rectangle fill="chocolate" height="12.0" width="12.0" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+            <Label text="- кустарник" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                <font>
+                    <Font size="14.0" />
+                </font></Label>
+
+            <Rectangle fill="darkkhaki" height="12.0" width="12.0" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+            <Label text="- сухостой" GridPane.columnIndex="3" GridPane.rowIndex="2">
+                <font>
+                    <Font size="14.0" />
+                </font></Label>
+
+            <Rectangle fill="brown" height="12.0" width="12.0" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+            <Label text="- лиственное дерево" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                <font>
+                    <Font size="14.0" />
+                </font></Label>
+
+            <Rectangle fill="lightseagreen" height="12.0" width="12.0" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+            <Label text="- хвойное дерево" GridPane.columnIndex="3" GridPane.rowIndex="3">
+            <font>
+               <Font size="14.0" />
+            </font></Label>
+
+            <columnConstraints>
+            <ColumnConstraints />
+            <ColumnConstraints />
+            <ColumnConstraints />
+            <ColumnConstraints />
+            </columnConstraints>
+
+            <rowConstraints>
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+            </rowConstraints>
+        </GridPane>
+        <padding>
+            <Insets right="11.0" top="8.0" />
+        </padding>
+    </VBox>
 
     <VBox fx:id="simArea" alignment="CENTER" maxHeight="380.0" maxWidth="300.0" minHeight="380.0" minWidth="300.0" prefHeight="380.0" prefWidth="300.0" spacing="10.0">
-        <TilePane fx:id="field" hgap="2" prefHeight="280.0" prefWidth="280.0" vgap="2">
-        </TilePane>
+        <TilePane fx:id="field" hgap="2" prefHeight="280.0" prefWidth="280.0" vgap="2" />
 
         <ProgressBar fx:id="progressBar" maxWidth="1.7976931348623157E308" />
 
-        <FlowPane alignment="TOP_CENTER" columnHalignment="CENTER" hgap="5.0" layoutX="10.0" maxWidth="1.7976931348623157E308" vgap="10.0">
-            <Button fx:id="oneYearStepButton" mnemonicParsing="false" onAction="#oneYearStepButtonClick" prefHeight="25.0" prefWidth="88.0" text="Шаг (1 год)" textAlignment="CENTER" />
-            <Button fx:id="tenYearStepButton" mnemonicParsing="false" onAction="#tenYearStepButtonClick" prefHeight="25.0" prefWidth="88.0" text="Шаг (10 лет)" textAlignment="CENTER" />
-            <Button fx:id="resetSimButton" mnemonicParsing="false" onAction="#resetSimButtonClick" prefHeight="25.0" prefWidth="88.0" text="Сброс" textAlignment="CENTER" />
-            <Button fx:id="runSimButton" mnemonicParsing="false" onAction="#runSimButtonClick" prefHeight="25.0" prefWidth="135.0" text="Запуск" textAlignment="CENTER" />
-            <Button fx:id="stopSimButton" mnemonicParsing="false" onAction="#stopSimButtonClick" prefHeight="25.0" prefWidth="134.0" text="Остановка" textAlignment="CENTER" />
+        <FlowPane alignment="TOP_CENTER" columnHalignment="CENTER" hgap="5.0" maxWidth="1.7976931348623157E308" vgap="10.0">
+            <Button mnemonicParsing="false" onAction="#oneYearStepButtonClick" prefHeight="25.0" prefWidth="88.0" text="Шаг (1 год)" textAlignment="CENTER" />
+            <Button mnemonicParsing="false" onAction="#tenYearStepButtonClick" prefHeight="25.0" prefWidth="88.0" text="Шаг (10 лет)" textAlignment="CENTER" />
+            <Button mnemonicParsing="false" onAction="#resetSimButtonClick" prefHeight="25.0" prefWidth="88.0" text="Сброс" textAlignment="CENTER" />
+            <Button mnemonicParsing="false" onAction="#runSimButtonClick" prefHeight="25.0" prefWidth="135.0" text="Запуск" textAlignment="CENTER" />
+            <Button mnemonicParsing="false" onAction="#stopSimButtonClick" prefHeight="25.0" prefWidth="134.0" text="Остановка" textAlignment="CENTER" />
         </FlowPane>
-      <padding>
-         <Insets left="15.0" right="11.0" />
-      </padding>
+        <padding>
+            <Insets left="15.0" right="11.0" />
+        </padding>
     </VBox>
-
-
 
    <padding>
       <Insets bottom="10.0" left="20.0" right="10.0" top="10.0" />
    </padding>
-
 </SplitPane>

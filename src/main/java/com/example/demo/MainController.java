@@ -21,14 +21,15 @@ public class MainController {
     private static final int FIELD_RANG = 23;
     private static final int FIELD_SIZE = FIELD_RANG*FIELD_RANG;
 
-    List<Moss> mossList = new ArrayList<>();
-    List<Grass> grassList = new ArrayList<>();
-    List<Bush> bushList = new ArrayList<>();
-    List<DeciduousTree> dtreeList = new ArrayList<>();
-    List<ConiferousTree> ctreeList = new ArrayList<>();
+    private final Timeline PROGRESS_BAR_TIMELINE = new Timeline(new KeyFrame(Duration.seconds(0), event -> yearPassed(1)),new KeyFrame(Duration.seconds(0.5)));
+
+    private List<Moss> mossList = new ArrayList<>();
+    private List<Grass> grassList = new ArrayList<>();
+    private List<Bush> bushList = new ArrayList<>();
+    private List<DeciduousTree> dtreeList = new ArrayList<>();
+    private List<ConiferousTree> ctreeList = new ArrayList<>();
 
 
-    private final Timeline progressBarTimeline = new Timeline(new KeyFrame(Duration.seconds(0),event -> yearPassed(1)),new KeyFrame(Duration.seconds(0.5)));
 
     @FXML private TilePane field;
     @FXML private ProgressBar progressBar;
@@ -63,8 +64,8 @@ public class MainController {
 
         logTextArea.clear();
 
-        if (progressBarTimeline.getStatus() == Animation.Status.RUNNING)
-            progressBarTimeline.stop();
+        if (PROGRESS_BAR_TIMELINE.getStatus() == Animation.Status.RUNNING)
+            PROGRESS_BAR_TIMELINE.stop();
         progressBar.setProgress(0.0);
 
         mossList.clear();
@@ -81,13 +82,13 @@ public class MainController {
     }
     @FXML private void runSimButtonClick() {
 
-        progressBarTimeline.setCycleCount(Animation.INDEFINITE);
-        progressBarTimeline.play();
+        PROGRESS_BAR_TIMELINE.setCycleCount(Animation.INDEFINITE);
+        PROGRESS_BAR_TIMELINE.play();
     }
     @FXML private void stopSimButtonClick() {
 
-        if (progressBarTimeline.getStatus() == Animation.Status.RUNNING)
-            progressBarTimeline.stop();
+        if (PROGRESS_BAR_TIMELINE.getStatus() == Animation.Status.RUNNING)
+            PROGRESS_BAR_TIMELINE.stop();
     }
 
     private void yearPassed(int numberOfYearsPassed) {
@@ -148,7 +149,7 @@ public class MainController {
                 for (int j=0; j < numOfProcessedPlantsFromList; j++)
                 {
                     dtreeListSizeBeforeProcessing = dtreeList.size();
-                    dtreeList.get(j).process(mossList, grassList, bushList, dtreeList);
+                    dtreeList.get(j).process(mossList, grassList,dtreeList);
 
                     if (dtreeList.size() < dtreeListSizeBeforeProcessing)
                     {
@@ -163,7 +164,7 @@ public class MainController {
                 for (int j=0; j < numOfProcessedPlantsFromList; j++)
                 {
                     ctreeListSizeBeforeProcessing = ctreeList.size();
-                    ctreeList.get(j).process(mossList, grassList, bushList, ctreeList);
+                    ctreeList.get(j).process(mossList, grassList, ctreeList);
 
                     if (ctreeList.size() < ctreeListSizeBeforeProcessing)
                     {
@@ -172,20 +173,20 @@ public class MainController {
                     }
                 }
 
-
-                logTextArea.appendText("-----------------YEAR "+ +(int)(progressBar.getProgress()*200) + "---------------------\n");
-                logTextArea.appendText("moss: "+ mossList.size()+" grass: " + grassList.size() + " bush: " + bushList.size() + "\n" +
-                        "deciduous tree: " + dtreeList.size() + " coniferous tree: " + ctreeList.size()+"\n\n");
-
-
                 CallWind(2,8,3, 2, 2);
 
-                if (progressBar.getProgress()*200 >= 70)
+                if ((int)(Math.round(progressBar.getProgress()*200)) >= 70)
                     CallWind(4,0,0,0,0);
 
+
+                logTextArea.appendText("----------------------ГОД: " + (int)(Math.round(progressBar.getProgress()*200)) + "----------------------\n");
+                logTextArea.appendText("мох: "+ mossList.size()+" трава: " + grassList.size() + " кустарник: " + bushList.size() + "\n" +
+                        "лиственных деревьев: " + dtreeList.size() + "\nхвойных деревьев: " + ctreeList.size()+"\n\n");
+
+
                 if (progressBar.getProgress() >= 1.00){
-                    if (progressBarTimeline.getStatus() == Animation.Status.RUNNING)
-                        progressBarTimeline.stop();
+                    if (PROGRESS_BAR_TIMELINE.getStatus() == Animation.Status.RUNNING)
+                        PROGRESS_BAR_TIMELINE.stop();
 
                     Alert infoAlert = new Alert(Alert.AlertType.INFORMATION);
                     infoAlert.setTitle("Поздравляем!!!");
@@ -196,8 +197,8 @@ public class MainController {
 
             else
             {
-                if (progressBarTimeline.getStatus() == Animation.Status.RUNNING)
-                    progressBarTimeline.stop();
+                if (PROGRESS_BAR_TIMELINE.getStatus() == Animation.Status.RUNNING)
+                    PROGRESS_BAR_TIMELINE.stop();
 
                 Alert attentionAlert = new Alert(Alert.AlertType.ERROR);
                 attentionAlert.setTitle("Внимание!!!");
@@ -242,7 +243,7 @@ public class MainController {
         {
             plantPlaceColumn = Helper.randomWithRange(0, FIELD_RANG-1);
             plantPlaceRow = Helper.randomWithRange(0, FIELD_RANG-1);
-            DeciduousTree.dropSeed((SoilRectangle) field.getChildren().get(plantPlaceColumn + plantPlaceRow*FIELD_RANG), mossList, grassList, bushList, dtreeList);
+            DeciduousTree.dropSeed((SoilRectangle) field.getChildren().get(plantPlaceColumn + plantPlaceRow*FIELD_RANG), mossList, grassList, dtreeList);
         }
 
         //CTree section
@@ -250,7 +251,7 @@ public class MainController {
         {
             plantPlaceColumn = Helper.randomWithRange(0, FIELD_RANG-1);
             plantPlaceRow = Helper.randomWithRange(0, FIELD_RANG-1);
-            ConiferousTree.dropSeed((SoilRectangle) field.getChildren().get(plantPlaceColumn + plantPlaceRow*FIELD_RANG), mossList, grassList, bushList, ctreeList);
+            ConiferousTree.dropSeed((SoilRectangle) field.getChildren().get(plantPlaceColumn + plantPlaceRow*FIELD_RANG), mossList, grassList, ctreeList);
         }
     }
 }

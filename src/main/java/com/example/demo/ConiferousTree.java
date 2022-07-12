@@ -7,22 +7,32 @@ import java.util.List;
 
 public class ConiferousTree extends Plant{
     //Constants
-    private static double CTREE_BIO_GEN = 100;
-    private static double CTREE_BIO_GEN_SPREAD_PROC = 0.05;
-    private static double CTREE_STORED_BIO_MASS_PROC = 0.9;
-    private static double CTREE_NEEDLES_PROP_IN_LITT = 0.8;
+    private static final double CTREE_BIO_GEN_APPR_NUM = 100;
+    private static final double CTREE_BIO_GEN_SPREAD_PROC = 0.05;
+    private static final double CTREE_STORED_BIO_MASS_PROC = 0.9;
+    private static final double CTREE_NEEDLES_PROP_IN_LITT = 0.8;
+
+    private static final double CTREE_MIN_FERT_LEVEL = 80;
+
+    private static final int CTREE_FULL_GROWN_AGE = 60;
+    private static final int CTREE_MIDDLE_AGE = 10;
 
 
-    private static double CTREE_MIN_FERT_LEVEL = 80;
+    private static final int CTREE_MIN_NUM_OF_SEEDS_TO_DROP = 1;
+    private static final int CTREE_MAX_NUM_OF_SEEDS_TO_DROP = 5;
 
-    private static int CTREE_FULL_GROWN_AGE = 60;
-    private static int CTREE_MIDDLE_AGE = 10;
+    private static final int CTREE_MIN_SEEDS_DROP_RADIUS = 4;
+    private static final int CTREE_MAX_SEEDS_DROP_RADIUS = 6;
+
+    private static final int CTREE_MIN_DIST_FROM_NEAR_DTREE = 2;
+    private static final int CTREE_MIN_DIST_FROM_NEAR_CTREE = 3;
+
 
 
     //Properties
     private int age;
     private double storedBioMass;
-    private double bioMassGenFullGrown;
+    private final double bioMassGenFullGrown;
     private ObservableList<SoilRectangle> treeCroneCoveredSoil;
 
 
@@ -31,23 +41,23 @@ public class ConiferousTree extends Plant{
         super(rectForPlant);
         age = 0;
         storedBioMass = 0;
-        bioMassGenFullGrown = Math.random()*(2*CTREE_BIO_GEN_SPREAD_PROC* CTREE_BIO_GEN)+ CTREE_BIO_GEN *(1-CTREE_BIO_GEN_SPREAD_PROC);
+        bioMassGenFullGrown = Math.random()*(2*CTREE_BIO_GEN_SPREAD_PROC* CTREE_BIO_GEN_APPR_NUM) + CTREE_BIO_GEN_APPR_NUM *(1-CTREE_BIO_GEN_SPREAD_PROC);
     }
 
 
     //Static methods
-    public static boolean dropSeed(SoilRectangle rectForPlant, List<Moss> mossList, List<Grass> grassList, List<Bush> bushList, List<ConiferousTree> ctreeList) {
+    public static boolean dropSeed(SoilRectangle rectForPlant, List<Moss> mossList, List<Grass> grassList, List<ConiferousTree> ctreeList) {
         if (rectForPlant.getFertilityLevel() >= CTREE_MIN_FERT_LEVEL)
         {
-            //Под другими лситвенными расти не будут, но будут расти рядом
-            ObservableList<SoilRectangle> listOfNearDeciduous = rectForPlant.getNearInRadius(2);
+            //Под другими лиственными расти не будут, но будут расти рядом
+            ObservableList<SoilRectangle> listOfNearDeciduous = rectForPlant.getNearInRadius(CTREE_MIN_DIST_FROM_NEAR_DTREE);
             for (SoilRectangle soilRect : listOfNearDeciduous) {
                 if (soilRect.getFill() == Color.BROWN)
                     return false;
             }
 
             //Под другими хвойными расти не будут, но будут расти рядом
-            ObservableList<SoilRectangle> listOfNearConiferous = rectForPlant.getNearInRadius(3);
+            ObservableList<SoilRectangle> listOfNearConiferous = rectForPlant.getNearInRadius(CTREE_MIN_DIST_FROM_NEAR_CTREE);
             for (SoilRectangle soilRect : listOfNearConiferous) {
                 if (soilRect.getFill() == Color.LIGHTSEAGREEN)
                     return false;
@@ -88,10 +98,8 @@ public class ConiferousTree extends Plant{
             }
 
             //Не будет расти на месте кустарника
-            return false;
         }
-        else
-            return false;
+        return false;
     }
 
     public static void plant(SoilRectangle rectForPlant, List<ConiferousTree> ctreeList){
@@ -101,7 +109,7 @@ public class ConiferousTree extends Plant{
 
 
     //Methods
-    public void process(List<Moss> mossList, List<Grass> grassList, List<Bush> bushList, List<ConiferousTree> ctreeList) {
+    public void process(List<Moss> mossList, List<Grass> grassList, List<ConiferousTree> ctreeList) {
         age++;
 
         if (age >= CTREE_FULL_GROWN_AGE)
@@ -145,16 +153,16 @@ public class ConiferousTree extends Plant{
 
             //Оставляем потомство раз в 4 года
             if (age % 4 == 0) {
-                ObservableList<SoilRectangle> potentialPlantPlaces = plantPlaceRect.getNearInRing(4,6);//
+                ObservableList<SoilRectangle> potentialPlantPlaces = plantPlaceRect.getNearInRing(CTREE_MIN_SEEDS_DROP_RADIUS,CTREE_MAX_SEEDS_DROP_RADIUS);
                 int numOfPotentialPlantPlaces = potentialPlantPlaces.size();
                 boolean[] isRectInspected = new boolean[numOfPotentialPlantPlaces];
 
                 int plantPlaceIndex;
-                int numOfSeedsToDrop = Helper.randomWithRange(1,5);//
+                int numOfSeedsToDrop = Helper.randomWithRange(CTREE_MIN_NUM_OF_SEEDS_TO_DROP,CTREE_MAX_NUM_OF_SEEDS_TO_DROP);
                 do{
                     plantPlaceIndex = Helper.randomWithRange(0,numOfPotentialPlantPlaces-1);
                     isRectInspected[plantPlaceIndex] = true;
-                    if(ConiferousTree.dropSeed(potentialPlantPlaces.get(plantPlaceIndex), mossList, grassList, bushList, ctreeList))
+                    if(ConiferousTree.dropSeed(potentialPlantPlaces.get(plantPlaceIndex), mossList, grassList, ctreeList))
                         numOfSeedsToDrop--;
 
                 }while((numOfSeedsToDrop>0) && List.of(isRectInspected).contains(false));
@@ -164,7 +172,7 @@ public class ConiferousTree extends Plant{
         else
         {
             //Увеличиваем кол-во генерируемой биомассы
-            bioMassGen = bioMassGenFullGrown*(1-(CTREE_FULL_GROWN_AGE-age)/CTREE_FULL_GROWN_AGE);
+            bioMassGen = bioMassGenFullGrown*(1-(CTREE_FULL_GROWN_AGE-age)/(CTREE_FULL_GROWN_AGE));
 
             //Запасаем биомассу в растении
             storedBioMass += bioMassGen * CTREE_STORED_BIO_MASS_PROC;

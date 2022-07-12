@@ -7,24 +7,34 @@ import java.util.List;
 
 public class DeciduousTree extends Plant{
     //Constants
-    private static double DTREE_BIO_GEN_APPR_NUM = 100;
-    private static double DTREE_BIO_GEN_SPREAD_PROC = 0.05;
-    private static double DTREE_STORED_BIO_MASS_PROC = 0.65;
+    private static final double DTREE_BIO_GEN_APPR_NUM = 100;
+    private static final double DTREE_BIO_GEN_SPREAD_PROC = 0.05;
+    private static final double DTREE_STORED_BIO_MASS_PROC = 0.65;
 
-    private static double DTREE_MIN_FERT_LEVEL = 30;
-    private static double DTREE_MAX_CONG_LEVEL = 10;
+    private static final double DTREE_MIN_FERT_LEVEL = 30;
+    private static final double DTREE_MAX_CONG_LEVEL = 10;
 
-    private static int DTREE_DELETE_AGE = 105;
-    private static int DTREE_DRY_AGE = 100;
-    private static int DTREE_OLD_AGE = 80;
-    private static int DTREE_FULL_GROWN_AGE = 60;
-    private static int DTREE_MIDDLE_AGE = 10;
+    private static final int DTREE_DELETE_AGE = 105;
+    private static final int DTREE_DRY_AGE = 100;
+    private static final int DTREE_OLD_AGE = 80;
+    private static final int DTREE_FULL_GROWN_AGE = 60;
+    private static final int DTREE_MIDDLE_AGE = 10;
+
+    private static final int DTREE_MIN_NUM_OF_SEEDS_TO_DROP = 1;
+    private static final int DTREE_MAX_NUM_OF_SEEDS_TO_DROP = 5;
+
+    private static final int DTREE_MIN_SEEDS_DROP_RADIUS = 5;
+    private static final int DTREE_MAX_SEEDS_DROP_RADIUS = 6;
+
+    private static final int DTREE_MIN_DIST_FROM_NEAR_DTREE = 4;
+    private static final int DTREE_MIN_DIST_FROM_NEAR_CTREE = 5;
+
 
 
     //Properties
     private int age;
     private double storedBioMass;
-    private double bioMassGenFullGrown;
+    private final double bioMassGenFullGrown;
     private ObservableList<SoilRectangle> treeCroneCoveredSoil;
 
 
@@ -39,18 +49,18 @@ public class DeciduousTree extends Plant{
 
 
     //Static methods
-    public static boolean dropSeed(SoilRectangle rectForPlant, List<Moss> mossList, List<Grass> grassList, List<Bush> bushList, List<DeciduousTree> dtreeList) {
+    public static boolean dropSeed(SoilRectangle rectForPlant, List<Moss> mossList, List<Grass> grassList, List<DeciduousTree> dtreeList) {
         if ((rectForPlant.getFertilityLevel() >= DTREE_MIN_FERT_LEVEL) && (rectForPlant.getPineCongestionLevel() < DTREE_MAX_CONG_LEVEL))
         {
             //Под другими лситвенными расти не будут, но будут расти рядом
-            ObservableList<SoilRectangle> listOfNearDeciduous = rectForPlant.getNearInRadius(4);
+            ObservableList<SoilRectangle> listOfNearDeciduous = rectForPlant.getNearInRadius(DTREE_MIN_DIST_FROM_NEAR_DTREE);
             for (SoilRectangle soilRect : listOfNearDeciduous) {
                 if (soilRect.getFill() == Color.BROWN)
                     return false;
             }
 
             //Под другими хвойными расти не будут, но будут расти рядом
-            ObservableList<SoilRectangle> listOfNearConiferous = rectForPlant.getNearInRadius(5);
+            ObservableList<SoilRectangle> listOfNearConiferous = rectForPlant.getNearInRadius(DTREE_MIN_DIST_FROM_NEAR_CTREE);
             for (SoilRectangle soilRect : listOfNearConiferous) {
                 if (soilRect.getFill() == Color.LIGHTSEAGREEN)
                     return false;
@@ -91,10 +101,8 @@ public class DeciduousTree extends Plant{
             }
 
             //Не будет расти на месте кустарника и умирающих многолетних
-            return false;
         }
-        else
-            return false;
+        return false;
     }
 
     public static void plant(SoilRectangle rectForPlant, List<DeciduousTree> dtreeList){
@@ -104,8 +112,14 @@ public class DeciduousTree extends Plant{
 
 
     //Methods
-    public void process(List<Moss> mossList, List<Grass> grassList, List<Bush> bushList, List<DeciduousTree> dtreeList) {
+    public void process(List<Moss> mossList, List<Grass> grassList, List<DeciduousTree> dtreeList) {
         age++;
+
+        //Проверяем на превышение уровня загрязнённости
+        if (plantPlaceRect.getPineCongestionLevel() >= DTREE_MAX_CONG_LEVEL) {
+            while(age < DTREE_DRY_AGE)
+                age++;
+        }
 
         if (age == DTREE_DELETE_AGE)
         {
@@ -162,16 +176,16 @@ public class DeciduousTree extends Plant{
 
             //Оставляем потомство
             {
-                ObservableList<SoilRectangle> potentialPlantPlaces = plantPlaceRect.getNearInRing(5,6);
+                ObservableList<SoilRectangle> potentialPlantPlaces = plantPlaceRect.getNearInRing(DTREE_MIN_SEEDS_DROP_RADIUS,DTREE_MAX_SEEDS_DROP_RADIUS);
                 int numOfPotentialPlantPlaces = potentialPlantPlaces.size();
                 boolean[] isRectInspected = new boolean[numOfPotentialPlantPlaces];
 
                 int plantPlaceIndex;
-                int numOfSeedsToDrop = Helper.randomWithRange(1,2);
+                int numOfSeedsToDrop = Helper.randomWithRange(DTREE_MIN_NUM_OF_SEEDS_TO_DROP,DTREE_MAX_NUM_OF_SEEDS_TO_DROP);
                 do{
                     plantPlaceIndex = Helper.randomWithRange(0,numOfPotentialPlantPlaces-1);
                     isRectInspected[plantPlaceIndex] = true;
-                    if(DeciduousTree.dropSeed(potentialPlantPlaces.get(plantPlaceIndex), mossList, grassList, bushList, dtreeList))
+                    if(DeciduousTree.dropSeed(potentialPlantPlaces.get(plantPlaceIndex), mossList, grassList, dtreeList))
                         numOfSeedsToDrop--;
 
                 }while((numOfSeedsToDrop>0) && List.of(isRectInspected).contains(false));
@@ -180,7 +194,7 @@ public class DeciduousTree extends Plant{
         else if(age >= DTREE_MIDDLE_AGE)
         {
             //Увеличиваем кол-во генерируемой биомассы
-            bioMassGen = bioMassGenFullGrown*(1-(double)(DTREE_FULL_GROWN_AGE-age)/(double)DTREE_FULL_GROWN_AGE);
+            bioMassGen = bioMassGenFullGrown*(1-(DTREE_FULL_GROWN_AGE-age)/DTREE_FULL_GROWN_AGE);
 
             //Запасаем биомассу в растении
             storedBioMass += bioMassGen * DTREE_STORED_BIO_MASS_PROC;
@@ -197,16 +211,16 @@ public class DeciduousTree extends Plant{
 
             //Оставляем потомство
             {
-                ObservableList<SoilRectangle> potentialPlantPlaces = plantPlaceRect.getNearInRing(5,6);//
+                ObservableList<SoilRectangle> potentialPlantPlaces = plantPlaceRect.getNearInRing(DTREE_MIN_SEEDS_DROP_RADIUS,DTREE_MAX_SEEDS_DROP_RADIUS);
                 int numOfPotentialPlantPlaces = potentialPlantPlaces.size();
                 boolean[] isRectInspected = new boolean[numOfPotentialPlantPlaces];
 
                 int plantPlaceIndex;
-                int numOfSeedsToDrop = Helper.randomWithRange(1,5);//
+                int numOfSeedsToDrop = Helper.randomWithRange(DTREE_MIN_NUM_OF_SEEDS_TO_DROP,DTREE_MAX_NUM_OF_SEEDS_TO_DROP);
                 do{
                     plantPlaceIndex = Helper.randomWithRange(0,numOfPotentialPlantPlaces-1);
                     isRectInspected[plantPlaceIndex] = true;
-                    if(DeciduousTree.dropSeed(potentialPlantPlaces.get(plantPlaceIndex), mossList, grassList, bushList, dtreeList))
+                    if(DeciduousTree.dropSeed(potentialPlantPlaces.get(plantPlaceIndex), mossList, grassList, dtreeList))
                         numOfSeedsToDrop--;
                 }while((numOfSeedsToDrop>0) && List.of(isRectInspected).contains(false));
             }
@@ -215,7 +229,7 @@ public class DeciduousTree extends Plant{
         else
         {
             //Увеличиваем кол-во генерируемой биомассы
-            bioMassGen = bioMassGenFullGrown*(1-(double)(DTREE_FULL_GROWN_AGE-age)/(double)DTREE_FULL_GROWN_AGE);
+            bioMassGen = bioMassGenFullGrown*(1-(DTREE_FULL_GROWN_AGE-age)/DTREE_FULL_GROWN_AGE);
 
             //Запасаем биомассу в растении
             storedBioMass += bioMassGen * DTREE_STORED_BIO_MASS_PROC;

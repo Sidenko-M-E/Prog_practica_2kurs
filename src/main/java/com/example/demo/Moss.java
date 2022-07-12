@@ -6,10 +6,10 @@ import java.util.List;
 
 public class Moss extends Plant{
     //Constants
-    private static double MOSS_BIO_GEN_APPR_NUM = 1;
-    private static double MOSS_BIO_GEN_SPREAD_PROC = 0.2;
+    private static final double MOSS_BIO_GEN_APPR_NUM = 1;
+    private static final double MOSS_BIO_GEN_SPREAD_PROC = 0.2;
 
-    private static double MOSS_MAX_CONG_LEVEL = 150;
+    private static final double MOSS_MAX_CONG_LEVEL = 150;
 
 
 
@@ -47,7 +47,7 @@ public class Moss extends Plant{
             mossList.remove(this);
         }
 
-        //Оставляем потомство
+        //Размножиться
         else{
             ObservableList<SoilRectangle> potentialPlantPlaces = plantPlaceRect.getNearInRadius(1);
             int numOfPotentialPlantPlaces = potentialPlantPlaces.size();

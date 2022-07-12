@@ -6,12 +6,11 @@ import java.util.List;
 
 public class Grass extends Plant{
     //Constants
-    private static double GRASS_BIO_GEN_APPR_NUM = 4;
-    private static double GRASS_BIO_GEN_SPREAD_PROC = 0.2;
+    private static final double GRASS_BIO_GEN_APPR_NUM = 4;
+    private static final double GRASS_BIO_GEN_SPREAD_PROC = 0.2;
 
-
-    private static double GRASS_MIN_FERT_LEVEL = 5;
-    private static double GRASS_MAX_CONG_LEVEL = 8;
+    private static final double GRASS_MIN_FERT_LEVEL = 5;
+    private static final double GRASS_MAX_CONG_LEVEL = 8;
 
 
 
@@ -72,7 +71,7 @@ public class Grass extends Plant{
             grassList.remove(this);
         }
 
-        //Оставляем потомство
+        //Размножиться
         else{
             ObservableList<SoilRectangle> potentialPlantPlaces = plantPlaceRect.getNearInRadius(2);
             int numOfPotentialPlantPlaces = potentialPlantPlaces.size();
